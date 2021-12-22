@@ -14,11 +14,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Mes_Trucs\\DUT Informatique\\2 ième Année\\Algorithmique\\Automate_Cellulaire\\Automate_Cellulaire\\Automate_Cellulaire\\Automate_Cellulaire.csproj",
+      "projectUniqueName": "D:\\Mes_Trucs\\DUT Informatique\\2 ième Année\\Algorithmique\\Automate_Cellulaire\\Automate_Cellulaire\\Automate_Cellulaire.csproj",
       "projectName": "Automate_Cellulaire",
-      "projectPath": "D:\\Mes_Trucs\\DUT Informatique\\2 ième Année\\Algorithmique\\Automate_Cellulaire\\Automate_Cellulaire\\Automate_Cellulaire\\Automate_Cellulaire.csproj",
+      "projectPath": "D:\\Mes_Trucs\\DUT Informatique\\2 ième Année\\Algorithmique\\Automate_Cellulaire\\Automate_Cellulaire\\Automate_Cellulaire.csproj",
       "packagesPath": "C:\\Users\\maelr\\.nuget\\packages\\",
-      "outputPath": "D:\\Mes_Trucs\\DUT Informatique\\2 ième Année\\Algorithmique\\Automate_Cellulaire\\Automate_Cellulaire\\Automate_Cellulaire\\obj\\",
+      "outputPath": "D:\\Mes_Trucs\\DUT Informatique\\2 ième Année\\Algorithmique\\Automate_Cellulaire\\Automate_Cellulaire\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

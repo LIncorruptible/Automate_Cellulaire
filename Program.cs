@@ -39,31 +39,15 @@ namespace Automate_Cellulaire
         {
             string fichier = demandeFichier();
 
-            int compteLigne = 0, compteColonne = 0, nbColon = 0, nbLigne = 0;
-
             string[] Lignes = File.ReadAllLines(@"../../../matrices/" + fichier);
 
-            foreach (string Ligne in Lignes)
-            {
-                if (Ligne != "")
-                {
-                    compteLigne++;
-
-                    string[] colonnes = Ligne.Split('|');
-
-                    foreach (string colonne in colonnes) if (colonne != null) compteColonne++;
-                }
-            }
-            compteColonne = compteColonne / compteLigne;
-
-            nbColon = compteColonne;
-            nbLigne = compteLigne;
+            int[] Taille = chercheTailleMatrice(fichier); int nbColon = Taille[0], nbLigne = Taille[1];
 
             char[,] matriceFichier = new char[nbLigne, nbColon];
 
-            for (int indiceLigne = 0; indiceLigne < compteLigne; indiceLigne++)
+            for (int indiceLigne = 0; indiceLigne < Taille[0]; indiceLigne++)
             {
-                for (int indiceColon = 0; indiceColon < compteColonne; indiceColon++)
+                for (int indiceColon = 0; indiceColon < Taille[1]; indiceColon++)
                 {
                     matriceFichier[indiceLigne, indiceColon] = Convert.ToChar(Lignes[indiceLigne].Split('|')[indiceColon]);
                 }
@@ -74,7 +58,6 @@ namespace Automate_Cellulaire
             if (choix == true) return Redimensionne_Matrice(matriceFichier, nbColon, nbLigne);
             else return matriceFichier;
         }
-
         /*FS1.1 : Demande_Taille()
          * Auteur : Maël Rhuin 21/12/2021
          * Valeur ajoutée : 
@@ -85,31 +68,23 @@ namespace Automate_Cellulaire
          */
         public static bool Demande_Taille(ref int nbLigne, ref int nbColon)
         {
-            Console.WriteLine("Souhaitez-vous agrandir la grille de jeu ? O/N");
-            Console.WriteLine($"Sa taille actuelle est de {nbLigne} lignes x {nbColon} colonnes.");
+            Console.WriteLine($"Souhaitez-vous agrandir la grille de jeu ? O/N\nSa taille actuelle est de {nbLigne} lignes x {nbColon} colonnes.");
 
-            bool choix = ((Console.ReadLine()).ToString() == "O") ? true : false;
+            bool choix = (Convert.ToString((Console.ReadLine())) == "O") ? true : false;
 
             if (choix == true)
             {
-                int saisieL = 0;
+                int saisieL = 0, saisieC = 0;
                 do
                 {
                     Console.WriteLine($"Saisissez le nouveau nbLigne > {nbLigne} : ");
                     saisieL = Convert.ToInt32(Console.ReadLine());
-                } while (saisieL <= nbLigne);
 
-                nbLigne = saisieL; Console.WriteLine(nbLigne);
-
-                int saisieC = 0;
-
-                do
-                {
                     Console.WriteLine($"Saisissez le nouveau nbColonne > {nbColon} : ");
                     saisieC = Convert.ToInt32(Console.ReadLine());
-                } while (saisieC <= nbColon);
 
-                nbColon = saisieC; Console.WriteLine(nbColon);
+                } while (saisieL <= nbLigne && saisieC <= nbColon);
+                nbLigne = saisieL; nbColon = saisieC;
             }
             return choix;
         }
@@ -128,26 +103,22 @@ namespace Automate_Cellulaire
         {
             char[,] nouvelleMatrice = new char[nbLigne, nbColon];
 
-            int compteNbLigne = matriceFichier.GetLength(0);
-            int compteNbColon = matriceFichier.GetLength(1);
+            int compteNbLigne = matriceFichier.GetLength(0), compteNbColon = matriceFichier.GetLength(1), indLigneMF = 0, indColonMF = 0;
 
-            int coord_Y = new Random().Next(0 + (nbLigne - compteNbLigne));
-            int coord_X = new Random().Next(0 + (nbColon - compteNbColon));
-
-            int indLigneMF = 0, indColonMF = 0;
+            int coord_Y = new Random().Next(0 + (nbLigne - compteNbLigne)), coord_X = new Random().Next(0 + (nbColon - compteNbColon));
 
             for (int indiceLigne = 0; indiceLigne < nbLigne; indiceLigne++)
             {
                 for (int indiceColonne = 0; indiceColonne < nbColon; indiceColonne++)
                 {
-                    if (((indiceLigne <= coord_Y) || (indiceLigne >= (coord_Y - compteNbLigne))) && ((indiceColonne >= coord_X) || (indiceColonne <= (coord_X + compteNbColon))))
+                    if ((indiceLigne >= coord_Y && indiceLigne <= coord_Y + compteNbLigne - 1) && (indiceColonne >= coord_X && indiceColonne <= coord_X + compteNbLigne - 1))
                     {
-                        nouvelleMatrice[indiceLigne, indiceColonne] = matriceFichier[indLigneMF, indColonMF];
-                        if (indColonMF != matriceFichier.GetLength(1) - 1) indColonMF++;
+                        nouvelleMatrice[indiceLigne, indiceColonne] = matriceFichier[indLigneMF, indColonMF]; indColonMF++;
                     }
                     else nouvelleMatrice[indiceLigne, indiceColonne] = 'O';
                 }
-                if (indLigneMF != matriceFichier.GetLength(0) - 1) indLigneMF++;
+                if (indiceLigne >= coord_Y && indiceLigne <= coord_Y + compteNbLigne - 1) indLigneMF++;
+                indColonMF = 0;
             }
             return nouvelleMatrice;
         }
@@ -170,6 +141,38 @@ namespace Automate_Cellulaire
             } while (!File.Exists("../../../matrices/" + fichier));
 
             return fichier;
+        }
+
+        /*FS1.4 : chercheTailleMatrice()
+         * Auteur : Maël Rhuin 21/12/2021
+         * Valeur ajoutée : 
+         *      Ce service renvoie la taille en nbLigne et nbColonne d'une matrice
+         * INPUT : (string) fichier
+         * OUTPUT : (Tableau de 2 entiers)
+         */
+        public static int[] chercheTailleMatrice(string fichier)
+        {
+            string[] Lignes = File.ReadAllLines(@"../../../matrices/" + fichier);
+
+            int compteLigne = 0, compteColonne = 0;
+
+
+            foreach (string Ligne in Lignes)
+            {
+                if (Ligne != "")
+                {
+                    compteLigne++;
+
+                    string[] colonnes = Ligne.Split('|');
+
+                    foreach (string colonne in colonnes) if (colonne != null) compteColonne++;
+                }
+            }
+            compteColonne = compteColonne / compteLigne;
+
+            int[] Tablo = new int[2] { compteLigne, compteColonne };
+
+            return Tablo;
         }
 
         /* FP2 : Traitement_Matricielle()

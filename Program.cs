@@ -37,18 +37,35 @@ namespace Automate_Cellulaire
          */
         public static char[,] Lecture_Matricielle()
         {
-            string fichier = "default.txt";
+            string fichier = demandeFichier();
 
-            fichier = demandeFichier(fichier);
-
-            char[,] matriceFichier = { };
             int compteLigne = 0, compteColonne = 0, nbColon = 0, nbLigne = 0;
 
+            string[] Lignes = File.ReadAllLines(@"../../../matrices/" + fichier);
 
-            foreach (string Ligne in File.ReadAllLines(@"../../../matrices/" + fichier))
+            foreach (string Ligne in Lignes)
             {
-                foreach (string colonne in Ligne.Split('|')) matriceFichier[compteLigne, compteColonne] = Convert.ToChar(colonne); compteColonne++; nbColon = compteColonne;
-                compteLigne++; nbLigne = compteLigne;
+                if (Ligne != "")
+                {
+                    compteLigne++;
+
+                    string[] colonnes = Ligne.Split('|');
+
+                    foreach (string colonne in colonnes) if (colonne != null) compteColonne++;
+                }
+            } compteColonne = compteColonne / compteLigne;
+
+            nbColon = compteColonne;
+            nbLigne = compteLigne;
+
+            char[,] matriceFichier = new char[nbLigne, nbColon];
+
+            for (int indiceLigne = 0; indiceLigne < compteLigne; indiceLigne++)
+            {
+                for (int indiceColon = 0; indiceColon < compteColonne; indiceColon++)
+                {
+                    matriceFichier[indiceLigne, indiceColon] = Convert.ToChar(Lignes[indiceLigne].Split('|')[indiceColon]);
+                }
             }
 
             bool choix = Demande_Taille(nbLigne, nbColon);
@@ -74,13 +91,22 @@ namespace Automate_Cellulaire
 
             if (choix == true)
             {
-                do { Console.WriteLine($"Saisissez le nouveau nbLigne > {nbLigne} : "); } while (Convert.ToInt32(Console.ReadLine()) <= nbLigne);
+                int saisieL = 0;
+                do {
+                    Console.WriteLine($"Saisissez le nouveau nbLigne > {nbLigne} : ");
+                    saisieL = Convert.ToInt32(Console.ReadLine());
+                } while (saisieL <= nbLigne);
 
-                nbLigne = Convert.ToInt32(Console.ReadLine());
+                nbLigne = saisieL;
 
-                do { Console.WriteLine($"Saisissez le nouveau nbColonne > {nbColon} : "); } while (Convert.ToInt32(Console.ReadLine()) <= nbColon);
+                int saisieC = 0;
 
-                nbColon = Convert.ToInt32(Console.ReadLine());
+                do { 
+                    Console.WriteLine($"Saisissez le nouveau nbColonne > {nbColon} : ");
+                    saisieC = Convert.ToInt32(Console.ReadLine());
+                } while (saisieC <= nbColon);
+
+                nbColon = saisieC;
             } return choix;
         }
 
@@ -96,7 +122,7 @@ namespace Automate_Cellulaire
          */
         public static char[,] Redimensionne_Matrice(char[,] matriceFichier, int nbColon, int nbLigne)
         {
-            char[,] nouvelleMatrice = { };
+            char[,] nouvelleMatrice = new char[nbLigne, nbColon];
 
             int compteNbLigne = matriceFichier.GetLength(0);
             int compteNbColon = matriceFichier.GetLength(1);
@@ -124,8 +150,9 @@ namespace Automate_Cellulaire
          * INPUT : (chaine de caractères) fichier
          * OUTPUT : -----
          */
-        public static string demandeFichier(string fichier)
+        public static string demandeFichier()
         {
+            string fichier;
             do
             {
                 Console.WriteLine("Renseignez le nom avec l'extension du fichier souhaité > ");

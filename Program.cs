@@ -53,7 +53,8 @@ namespace Automate_Cellulaire
 
                     foreach (string colonne in colonnes) if (colonne != null) compteColonne++;
                 }
-            } compteColonne = compteColonne / compteLigne;
+            }
+            compteColonne = compteColonne / compteLigne;
 
             nbColon = compteColonne;
             nbLigne = compteLigne;
@@ -92,7 +93,8 @@ namespace Automate_Cellulaire
             if (choix == true)
             {
                 int saisieL = 0;
-                do {
+                do
+                {
                     Console.WriteLine($"Saisissez le nouveau nbLigne > {nbLigne} : ");
                     saisieL = Convert.ToInt32(Console.ReadLine());
                 } while (saisieL <= nbLigne);
@@ -101,13 +103,15 @@ namespace Automate_Cellulaire
 
                 int saisieC = 0;
 
-                do { 
+                do
+                {
                     Console.WriteLine($"Saisissez le nouveau nbColonne > {nbColon} : ");
                     saisieC = Convert.ToInt32(Console.ReadLine());
                 } while (saisieC <= nbColon);
 
                 nbColon = saisieC; Console.WriteLine(nbColon);
-            } return choix;
+            }
+            return choix;
         }
 
         /*FS1.2 : Redimensionne_Matrice()
@@ -140,9 +144,12 @@ namespace Automate_Cellulaire
                     {
                         nouvelleMatrice[indiceLigne, indiceColonne] = matriceFichier[indLigneMF, indColonMF];
                         if (indColonMF != matriceFichier.GetLength(1) - 1) indColonMF++;
-                    } else nouvelleMatrice[indiceLigne, indiceColonne] = 'O';
-                } if (indLigneMF != matriceFichier.GetLength(0) - 1) indLigneMF++;
-            } return nouvelleMatrice;
+                    }
+                    else nouvelleMatrice[indiceLigne, indiceColonne] = 'O';
+                }
+                if (indLigneMF != matriceFichier.GetLength(0) - 1) indLigneMF++;
+            }
+            return nouvelleMatrice;
         }
 
         /*FS1.3 : demandeFichier()
@@ -198,7 +205,7 @@ namespace Automate_Cellulaire
                     newMatrice[indiceLignes, indiceColonnes] = Ecriture_Matricielle(avenir);
 
                 }
-                
+
             }
             Affichage_Jeu(newMatrice);
 
@@ -238,7 +245,7 @@ namespace Automate_Cellulaire
                     }
                 }
             }
-            if(matrice[indiceLignes,indiceColonnes] == 'X')
+            if (matrice[indiceLignes, indiceColonnes] == 'X')
             {
                 return compteur - 1;
             }
@@ -246,7 +253,7 @@ namespace Automate_Cellulaire
             {
                 return compteur;
             }
-            
+
         }
 
         /* FT2.1.1 : Exceptions_Voisins()
@@ -361,7 +368,8 @@ namespace Automate_Cellulaire
                         Console.BackgroundColor = ConsoleColor.White;
                         Console.Write($"{matriceActuelle[indiceLigne, indiceColon]} ");
                         Console.BackgroundColor = ConsoleColor.Black;
-                    } else
+                    }
+                    else
                     {
                         Console.ForegroundColor = ConsoleColor.Black;
                         Console.BackgroundColor = ConsoleColor.Black;
@@ -389,10 +397,11 @@ namespace Automate_Cellulaire
             int nbLigne_de_nouvelleMatrice = nouvelleMatrice.GetLength(0);
             int nbColon_de_nouvelleMatrice = nouvelleMatrice.GetLength(1);
 
-            if ( (nbColon_de_ancienneMatrice != nbColon_de_nouvelleMatrice) || (nbLigne_de_ancienneMatrice != nbLigne_de_nouvelleMatrice) )
+            if ((nbColon_de_ancienneMatrice != nbColon_de_nouvelleMatrice) || (nbLigne_de_ancienneMatrice != nbLigne_de_nouvelleMatrice))
             {
                 return false;
-            } else
+            }
+            else
             {
                 for (int indiceLigne = 0; indiceLigne < nbLigne_de_ancienneMatrice; indiceLigne++)
                 {
@@ -400,7 +409,8 @@ namespace Automate_Cellulaire
                     {
                         if (ancienneMatrice[indiceLigne, indiceColon] != nouvelleMatrice[indiceLigne, indiceColon]) return false;
                     }
-                } return true;
+                }
+                return true;
             }
         }
 
@@ -423,6 +433,6 @@ namespace Automate_Cellulaire
 
                 Thread.Sleep(25);
             } while (boucle == false);
-        }   
+        }
     }
 }

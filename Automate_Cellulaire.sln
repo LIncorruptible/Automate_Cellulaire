@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31624.102
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Automate_Cellulaire", "Automate_Cellulaire.csproj", "{922C6EE6-B5F9-47A6-8432-9BB539E5E789}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{922C6EE6-B5F9-47A6-8432-9BB539E5E789}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{922C6EE6-B5F9-47A6-8432-9BB539E5E789}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{922C6EE6-B5F9-47A6-8432-9BB539E5E789}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{922C6EE6-B5F9-47A6-8432-9BB539E5E789}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C3D711C0-15E2-461D-9C78-7B830A84B96F}
+	EndGlobalSection
+EndGlobal

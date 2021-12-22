@@ -68,13 +68,13 @@ namespace Automate_Cellulaire
                 }
             }
 
-            bool choix = Demande_Taille(nbLigne, nbColon);
+            bool choix = Demande_Taille(ref nbLigne, ref nbColon);
 
             if (choix == true) return Redimensionne_Matrice(matriceFichier, nbColon, nbLigne);
             else return matriceFichier;
         }
 
-        /*FS1.1 : Lecture_Matricielle()
+        /*FS1.1 : Demande_Taille()
          * Auteur : Maël Rhuin 21/12/2021
          * Valeur ajoutée : 
          *      Ce service demande à l'utilisateur s'il souhaite changer la taille de la grille de jeu.
@@ -82,7 +82,7 @@ namespace Automate_Cellulaire
          * INPUT : (entier) nbColon, nbLigne
          * OUTPUT : (booléen)
          */
-        public static bool Demande_Taille(int nbLigne, int nbColon)
+        public static bool Demande_Taille(ref int nbLigne, ref int nbColon)
         {
             Console.WriteLine("Souhaitez-vous agrandir la grille de jeu ? O/N");
             Console.WriteLine($"Sa taille actuelle est de {nbLigne} lignes x {nbColon} colonnes.");
@@ -97,7 +97,7 @@ namespace Automate_Cellulaire
                     saisieL = Convert.ToInt32(Console.ReadLine());
                 } while (saisieL <= nbLigne);
 
-                nbLigne = saisieL;
+                nbLigne = saisieL; Console.WriteLine(nbLigne);
 
                 int saisieC = 0;
 
@@ -106,7 +106,7 @@ namespace Automate_Cellulaire
                     saisieC = Convert.ToInt32(Console.ReadLine());
                 } while (saisieC <= nbColon);
 
-                nbColon = saisieC;
+                nbColon = saisieC; Console.WriteLine(nbColon);
             } return choix;
         }
 
@@ -130,15 +130,18 @@ namespace Automate_Cellulaire
             int coord_Y = new Random().Next(0 + (nbLigne - compteNbLigne));
             int coord_X = new Random().Next(0 + (nbColon - compteNbColon));
 
+            int indLigneMF = 0, indColonMF = 0;
+
             for (int indiceLigne = 0; indiceLigne < nbLigne; indiceLigne++)
             {
                 for (int indiceColonne = 0; indiceColonne < nbColon; indiceColonne++)
                 {
                     if (((indiceLigne <= coord_Y) || (indiceLigne >= (coord_Y - compteNbLigne))) && ((indiceColonne >= coord_X) || (indiceColonne <= (coord_X + compteNbColon))))
                     {
-                        nouvelleMatrice[indiceLigne, indiceColonne] = matriceFichier[(indiceLigne - coord_Y), (indiceColonne - coord_X)];
+                        nouvelleMatrice[indiceLigne, indiceColonne] = matriceFichier[indLigneMF, indColonMF];
+                        if (indColonMF != matriceFichier.GetLength(1) - 1) indColonMF++;
                     } else nouvelleMatrice[indiceLigne, indiceColonne] = 'O';
-                }
+                } if (indLigneMF != matriceFichier.GetLength(0) - 1) indLigneMF++;
             } return nouvelleMatrice;
         }
 

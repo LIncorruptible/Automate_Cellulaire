@@ -137,6 +137,141 @@ namespace Automate_Cellulaire
             } while (!File.Exists("../../../matrices/" + fichier));
         }
 
+        /* FP2 : Traitement_Matricielle()
+         * Auteur : Baptiste Risse 21/12/2021
+         * Valeur ajoutée :
+         *      Ce service permet de traiter la matrice existante, pour ensuite retourner une nouvelle matrice.
+         * INPUT : matrice (2D) de caractère
+         * OUTPUT : nouvelle matrice (2D) de caractère
+         */
+        public static char[,] Traitement_Matricielle(char[,] matrice)
+        {
+            int indiceLignes, indiceColonnes, nbVoisins, indiceDimensions;
+            bool avenir;
+            int[] Dimensions = new int[2];
+
+            int nbDimensions = matrice.Rank;
+
+            for(indiceDimensions = 0; indiceDimensions < nbDimensions; indiceDimensions++)
+            {
+                Dimensions[indiceDimensions] = matrice.GetLength(indiceDimensions);
+            }
+
+            char[,] newMatrice = new char[Dimensions[0], Dimensions[1]];
+
+            for(indiceLignes = 1; indiceLignes <= Dimensions[0]; indiceLignes++)
+            {
+                for(indiceColonnes = 1; indiceColonnes <= Dimensions[1]; indiceColonnes++)
+                {
+                    nbVoisins = Compteur_Voisins(matrice, indiceLignes, indiceColonnes, Dimensions[0], Dimensions[1]);
+
+                    avenir = Avenir_cellule(nbVoisins, matrice, indiceLignes, indiceColonnes);
+
+                    newMatrice[indiceLignes, indiceColonnes] = Ecriture_Matricielle(avenir);
+
+                    Affichage_Jeu(newMatrice);
+                }
+            }
+            return newMatrice;
+        }
+
+        /* FS2.1 : Compteur_Voisins()
+         * Auteur : Baptiste Risse 21/12/2021
+         * Valeur ajoutée :
+         *      Ce service permet de compter le nombre de voisins d'une case dans la matrice.
+         * INPUT : matrice (2D) de caractère, indiceLignes entier, indiceColonnes entier, nbLignes entier, nbColonnes entier
+         * OUTPUT : compteur entier
+         */
+        public static int Compteur_Voisins(char[,] matrice, int indiceLignes, int indiceColonnes, int nbLignes, int nbColonnes)
+        {
+            int deuxiemeIndiceLignes, deuxiemeIndiceColonnes, ligneMin, ligneMax, colonneMin, colonneMax, compteur = 0;
+
+            ligneMin = indiceLignes - 1;
+            ligneMax = indiceLignes + 1;
+            colonneMin = indiceColonnes - 1;
+            colonneMax = indiceColonnes + 1;
+
+
+            if (indiceLignes == 1 || indiceLignes == nbLignes || indiceColonnes == 1 || indiceColonnes == nbColonnes)
+            {
+                Exceptions_Voisins(indiceColonnes, indiceColonnes, nbLignes, nbColonnes, ref ligneMin, ref ligneMax, ref colonneMin, ref colonneMax);
+            }
+            
+                
+            for(deuxiemeIndiceLignes = ligneMin; deuxiemeIndiceLignes <= ligneMax; deuxiemeIndiceLignes++)
+            {
+                for(deuxiemeIndiceColonnes = colonneMin; deuxiemeIndiceColonnes <= colonneMax; deuxiemeIndiceColonnes++)
+                {
+                    if(deuxiemeIndiceLignes != indiceLignes && deuxiemeIndiceColonnes != indiceColonnes && matrice[deuxiemeIndiceLignes, deuxiemeIndiceColonnes] == 'X')
+                    {
+                        compteur++;
+                    }
+                }
+            }
+            return compteur;
+        }
+
+        /* FT2.1.1 : Exceptions_Voisins()
+         * Auteur : Baptiste Risse 21/12/2021
+         * Valeur ajoutée :
+         *      Ce service permet de retourner la limites des lignes et des colonnes si la case concernée se trouve sur un "bord" du tableau.
+         * INPUT : indiceLignes entier, indiceColonnes entier, nbLignes entier, nbColonnes entier, ligneMin entier, ligneMax entier, colonneMin entier, colonneMax entier
+         * OUTPUT : ligneMin entier, ligneMax entier, colonneMin entier, colonneMax entier
+         */
+        public static void Exceptions_Voisins(int indiceLignes, int indiceColonnes, int nbLignes, int nbColonnes, ref int ligneMin, ref int ligneMax, ref int colonneMin, ref int colonneMax)
+        {
+            if(indiceLignes == 1)
+            {
+                ligneMin = indiceLignes;
+            }
+            if (indiceLignes == nbLignes)
+            {
+                ligneMax = indiceLignes;
+            }
+            if (indiceColonnes == 1)
+            {
+                colonneMin = indiceColonnes;
+            }
+            if (indiceColonnes == nbColonnes)
+            {
+                colonneMax = indiceColonnes;
+            }
+        }
+
+        /* FS2.2 : Avenir_cellule()
+         * Auteur : Baptiste Risse 21/12/2021
+         * Valeur ajoutée :
+         *      Ce service permet d'identifier si une cellule sera vivante ou morte dans la prochaine matrice.
+         *      Si la cellule est vivante la fonctin retourne true sinon elle retourne false.
+         * INPUT : nbVoisins entier, matrice (2D) de caractère, indiceLignes entier, indiceColonnes entier
+         * OUTPUT : true ou false
+         */
+        public static bool Avenir_cellule(int nbVoisins, char[,] matrice, int indiceLignes, int indiceColonnes)
+        {
+            if(matrice[indiceLignes,indiceColonnes] == 'X')
+            {
+                if(nbVoisins == 2 || nbVoisins == 3)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                if(nbVoisins == 3)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
         /*FP3
             * FP3 : Bool_continue()
             * Auteur : Justin Ferdinand 21/12/2021
@@ -168,6 +303,8 @@ namespace Automate_Cellulaire
                 } return true;
             }
         }
+
+        
 
         static void Main(string[] args)
         {

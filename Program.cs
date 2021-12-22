@@ -1,12 +1,12 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 
 namespace Automate_Cellulaire
 {
     class Program
     {
-        /*FP0
-         * FP0 : Interface_de_Depart()
+        /*FP0 : Interface_de_Depart()
          * Auteur : Maël Rhuin 21/12/2021
          * Valeur ajoutée : 
          *      Ce service permet de guider l'utilisateur dans le lancement du programme.
@@ -27,8 +27,7 @@ namespace Automate_Cellulaire
             );
         }
 
-        /*FP1
-         * FP1 : Lecture_Matricielle()
+        /*FP1 : Lecture_Matricielle()
          * Auteur : Maël Rhuin 21/12/2021
          * Valeur ajoutée : 
          *      Ce service doit à partir d'un fichier contenant une "matrice" et des choix utilisateurs,
@@ -38,28 +37,44 @@ namespace Automate_Cellulaire
          */
         public static char[,] Lecture_Matricielle()
         {
-            string fichier = "default.txt";
+            string fichier = demandeFichier();
 
-            demandeFichier(fichier);
-
-            char[,] matriceFichier = { };
             int compteLigne = 0, compteColonne = 0, nbColon = 0, nbLigne = 0;
 
+            string[] Lignes = File.ReadAllLines(@"../../../matrices/" + fichier);
 
-            foreach (string Ligne in File.ReadAllLines(@"../../../matrices/" + fichier))
+            foreach (string Ligne in Lignes)
             {
-                foreach (string colonne in Ligne.Split("||")) matriceFichier[compteLigne, compteColonne] = Convert.ToChar(colonne); compteColonne++; nbColon = compteColonne;
-                compteLigne++; nbLigne = compteLigne;
+                if (Ligne != "")
+                {
+                    compteLigne++;
+
+                    string[] colonnes = Ligne.Split('|');
+
+                    foreach (string colonne in colonnes) if (colonne != null) compteColonne++;
+                }
+            } compteColonne = compteColonne / compteLigne;
+
+            nbColon = compteColonne;
+            nbLigne = compteLigne;
+
+            char[,] matriceFichier = new char[nbLigne, nbColon];
+
+            for (int indiceLigne = 0; indiceLigne < compteLigne; indiceLigne++)
+            {
+                for (int indiceColon = 0; indiceColon < compteColonne; indiceColon++)
+                {
+                    matriceFichier[indiceLigne, indiceColon] = Convert.ToChar(Lignes[indiceLigne].Split('|')[indiceColon]);
+                }
             }
 
-            bool choix = Demande_Taille(nbLigne, nbColon);
+            bool choix = Demande_Taille(ref nbLigne, ref nbColon);
 
             if (choix == true) return Redimensionne_Matrice(matriceFichier, nbColon, nbLigne);
             else return matriceFichier;
         }
 
-        /*FS1.1
-         * FS1.1 : Lecture_Matricielle()
+        /*FS1.1 : Demande_Taille()
          * Auteur : Maël Rhuin 21/12/2021
          * Valeur ajoutée : 
          *      Ce service demande à l'utilisateur s'il souhaite changer la taille de la grille de jeu.
@@ -67,7 +82,7 @@ namespace Automate_Cellulaire
          * INPUT : (entier) nbColon, nbLigne
          * OUTPUT : (booléen)
          */
-        public static bool Demande_Taille(int nbLigne, int nbColon)
+        public static bool Demande_Taille(ref int nbLigne, ref int nbColon)
         {
             Console.WriteLine("Souhaitez-vous agrandir la grille de jeu ? O/N");
             Console.WriteLine($"Sa taille actuelle est de {nbLigne} lignes x {nbColon} colonnes.");
@@ -76,18 +91,26 @@ namespace Automate_Cellulaire
 
             if (choix == true)
             {
-                do { Console.WriteLine($"Saisissez le nouveau nbLigne > {nbLigne} : "); } while (Convert.ToInt32(Console.ReadLine()) <= nbLigne);
+                int saisieL = 0;
+                do {
+                    Console.WriteLine($"Saisissez le nouveau nbLigne > {nbLigne} : ");
+                    saisieL = Convert.ToInt32(Console.ReadLine());
+                } while (saisieL <= nbLigne);
 
-                nbLigne = Convert.ToInt32(Console.ReadLine());
+                nbLigne = saisieL; Console.WriteLine(nbLigne);
 
-                do { Console.WriteLine($"Saisissez le nouveau nbColonne > {nbColon} : "); } while (Convert.ToInt32(Console.ReadLine()) <= nbColon);
+                int saisieC = 0;
 
-                nbColon = Convert.ToInt32(Console.ReadLine());
+                do { 
+                    Console.WriteLine($"Saisissez le nouveau nbColonne > {nbColon} : ");
+                    saisieC = Convert.ToInt32(Console.ReadLine());
+                } while (saisieC <= nbColon);
+
+                nbColon = saisieC; Console.WriteLine(nbColon);
             } return choix;
         }
 
-        /*FS1.2
-         * FS1.2 : Redimensionne_Matrice()
+        /*FS1.2 : Redimensionne_Matrice()
          * Auteur : Maël Rhuin 21/12/2021
          * Valeur ajoutée : 
          *      Ce service redimensionne la grille de jeu en placant dans une nouvelle matrice, l'ancienne plus petite.
@@ -99,7 +122,7 @@ namespace Automate_Cellulaire
          */
         public static char[,] Redimensionne_Matrice(char[,] matriceFichier, int nbColon, int nbLigne)
         {
-            char[,] nouvelleMatrice = { };
+            char[,] nouvelleMatrice = new char[nbLigne, nbColon];
 
             int compteNbLigne = matriceFichier.GetLength(0);
             int compteNbColon = matriceFichier.GetLength(1);
@@ -107,20 +130,22 @@ namespace Automate_Cellulaire
             int coord_Y = new Random().Next(0 + (nbLigne - compteNbLigne));
             int coord_X = new Random().Next(0 + (nbColon - compteNbColon));
 
+            int indLigneMF = 0, indColonMF = 0;
+
             for (int indiceLigne = 0; indiceLigne < nbLigne; indiceLigne++)
             {
                 for (int indiceColonne = 0; indiceColonne < nbColon; indiceColonne++)
                 {
                     if (((indiceLigne <= coord_Y) || (indiceLigne >= (coord_Y - compteNbLigne))) && ((indiceColonne >= coord_X) || (indiceColonne <= (coord_X + compteNbColon))))
                     {
-                        nouvelleMatrice[indiceLigne, indiceColonne] = matriceFichier[(indiceLigne - coord_Y), (indiceColonne - coord_X)];
+                        nouvelleMatrice[indiceLigne, indiceColonne] = matriceFichier[indLigneMF, indColonMF];
+                        if (indColonMF != matriceFichier.GetLength(1) - 1) indColonMF++;
                     } else nouvelleMatrice[indiceLigne, indiceColonne] = 'O';
-                }
+                } if (indLigneMF != matriceFichier.GetLength(0) - 1) indLigneMF++;
             } return nouvelleMatrice;
         }
 
-        /*FS1.3
-         * FS1.3 : demandeFichier()
+        /*FS1.3 : demandeFichier()
          * Auteur : Maël Rhuin 21/12/2021
          * Valeur ajoutée : 
          *      Ce service demande à l'utilisateur le fichier à utiliser et vérifie s'il existe ou non afin de prévenir éventuellement l'utilisateur.
@@ -128,22 +153,25 @@ namespace Automate_Cellulaire
          * INPUT : (chaine de caractères) fichier
          * OUTPUT : -----
          */
-        public static void demandeFichier(string fichier)
+        public static string demandeFichier()
         {
+            string fichier;
             do
             {
                 Console.WriteLine("Renseignez le nom avec l'extension du fichier souhaité > ");
                 fichier = (Console.ReadLine()).ToString();
             } while (!File.Exists("../../../matrices/" + fichier));
+
+            return fichier;
         }
 
         /* FP2 : Traitement_Matricielle()
-         * Auteur : Baptiste Risse 21/12/2021
-         * Valeur ajoutée :
-         *      Ce service permet de traiter la matrice existante, pour ensuite retourner une nouvelle matrice.
-         * INPUT : matrice (2D) de caractère
-         * OUTPUT : nouvelle matrice (2D) de caractère
-         */
+                 * Auteur : Baptiste Risse 21/12/2021
+                 * Valeur ajoutée :
+                 *      Ce service permet de traiter la matrice existante, pour ensuite retourner une nouvelle matrice.
+                 * INPUT : matrice (2D) de caractère
+                 * OUTPUT : nouvelle matrice (2D) de caractère
+                 */
         public static char[,] Traitement_Matricielle(char[,] matrice)
         {
             int indiceLignes, indiceColonnes, nbVoisins, indiceDimensions;
@@ -152,16 +180,16 @@ namespace Automate_Cellulaire
 
             int nbDimensions = matrice.Rank;
 
-            for(indiceDimensions = 0; indiceDimensions < nbDimensions; indiceDimensions++)
+            for (indiceDimensions = 0; indiceDimensions < nbDimensions; indiceDimensions++)
             {
                 Dimensions[indiceDimensions] = matrice.GetLength(indiceDimensions);
             }
 
             char[,] newMatrice = new char[Dimensions[0], Dimensions[1]];
 
-            for(indiceLignes = 1; indiceLignes <= Dimensions[0]; indiceLignes++)
+            for (indiceLignes = 0; indiceLignes < Dimensions[0]; indiceLignes++)
             {
-                for(indiceColonnes = 1; indiceColonnes <= Dimensions[1]; indiceColonnes++)
+                for (indiceColonnes = 0; indiceColonnes < Dimensions[1]; indiceColonnes++)
                 {
                     nbVoisins = Compteur_Voisins(matrice, indiceLignes, indiceColonnes, Dimensions[0], Dimensions[1]);
 
@@ -169,19 +197,21 @@ namespace Automate_Cellulaire
 
                     newMatrice[indiceLignes, indiceColonnes] = Ecriture_Matricielle(avenir);
 
-                    Affichage_Jeu(newMatrice);
                 }
+                
             }
+            Affichage_Jeu(newMatrice);
+
             return newMatrice;
         }
 
         /* FS2.1 : Compteur_Voisins()
-         * Auteur : Baptiste Risse 21/12/2021
-         * Valeur ajoutée :
-         *      Ce service permet de compter le nombre de voisins d'une case dans la matrice.
-         * INPUT : matrice (2D) de caractère, indiceLignes entier, indiceColonnes entier, nbLignes entier, nbColonnes entier
-         * OUTPUT : compteur entier
-         */
+                 * Auteur : Baptiste Risse 21/12/2021
+                 * Valeur ajoutée :
+                 *      Ce service permet de compter le nombre de voisins d'une case dans la matrice.
+                 * INPUT : matrice (2D) de caractère, indiceLignes entier, indiceColonnes entier, nbLignes entier, nbColonnes entier
+                 * OUTPUT : compteur entier
+                 */
         public static int Compteur_Voisins(char[,] matrice, int indiceLignes, int indiceColonnes, int nbLignes, int nbColonnes)
         {
             int deuxiemeIndiceLignes, deuxiemeIndiceColonnes, ligneMin, ligneMax, colonneMin, colonneMax, compteur = 0;
@@ -192,23 +222,31 @@ namespace Automate_Cellulaire
             colonneMax = indiceColonnes + 1;
 
 
-            if (indiceLignes == 1 || indiceLignes == nbLignes || indiceColonnes == 1 || indiceColonnes == nbColonnes)
+            if (indiceLignes == 0 || indiceLignes == nbLignes - 1 || indiceColonnes == 0 || indiceColonnes == nbColonnes - 1)
             {
-                Exceptions_Voisins(indiceColonnes, indiceColonnes, nbLignes, nbColonnes, ref ligneMin, ref ligneMax, ref colonneMin, ref colonneMax);
+                Exceptions_Voisins(indiceLignes, indiceColonnes, nbLignes, nbColonnes, ref ligneMin, ref ligneMax, ref colonneMin, ref colonneMax);
             }
-            
-                
-            for(deuxiemeIndiceLignes = ligneMin; deuxiemeIndiceLignes <= ligneMax; deuxiemeIndiceLignes++)
+
+
+            for (deuxiemeIndiceLignes = ligneMin; deuxiemeIndiceLignes <= ligneMax; deuxiemeIndiceLignes++)
             {
-                for(deuxiemeIndiceColonnes = colonneMin; deuxiemeIndiceColonnes <= colonneMax; deuxiemeIndiceColonnes++)
+                for (deuxiemeIndiceColonnes = colonneMin; deuxiemeIndiceColonnes <= colonneMax; deuxiemeIndiceColonnes++)
                 {
-                    if(deuxiemeIndiceLignes != indiceLignes && deuxiemeIndiceColonnes != indiceColonnes && matrice[deuxiemeIndiceLignes, deuxiemeIndiceColonnes] == 'X')
+                    if (matrice[deuxiemeIndiceLignes, deuxiemeIndiceColonnes] == 'X')
                     {
                         compteur++;
                     }
                 }
             }
-            return compteur;
+            if(matrice[indiceLignes,indiceColonnes] == 'X')
+            {
+                return compteur - 1;
+            }
+            else
+            {
+                return compteur;
+            }
+            
         }
 
         /* FT2.1.1 : Exceptions_Voisins()
@@ -220,22 +258,26 @@ namespace Automate_Cellulaire
          */
         public static void Exceptions_Voisins(int indiceLignes, int indiceColonnes, int nbLignes, int nbColonnes, ref int ligneMin, ref int ligneMax, ref int colonneMin, ref int colonneMax)
         {
-            if(indiceLignes == 1)
+            if (indiceLignes == 0)
             {
                 ligneMin = indiceLignes;
             }
-            if (indiceLignes == nbLignes)
+
+            if (indiceLignes == nbLignes - 1)
             {
                 ligneMax = indiceLignes;
             }
-            if (indiceColonnes == 1)
+
+            if (indiceColonnes == 0)
             {
                 colonneMin = indiceColonnes;
             }
-            if (indiceColonnes == nbColonnes)
+
+            if (indiceColonnes == nbColonnes - 1)
             {
                 colonneMax = indiceColonnes;
             }
+
         }
 
         /* FS2.2 : Avenir_cellule()
@@ -248,9 +290,9 @@ namespace Automate_Cellulaire
          */
         public static bool Avenir_cellule(int nbVoisins, char[,] matrice, int indiceLignes, int indiceColonnes)
         {
-            if(matrice[indiceLignes,indiceColonnes] == 'X')
+            if (matrice[indiceLignes, indiceColonnes] == 'X')
             {
-                if(nbVoisins == 2 || nbVoisins == 3)
+                if (nbVoisins == 2 || nbVoisins == 3)
                 {
                     return true;
                 }
@@ -261,7 +303,7 @@ namespace Automate_Cellulaire
             }
             else
             {
-                if(nbVoisins == 3)
+                if (nbVoisins == 3)
                 {
                     return true;
                 }
@@ -272,8 +314,66 @@ namespace Automate_Cellulaire
             }
         }
 
-        /*FP3
-            * FP3 : Bool_continue()
+        /*FS2.2 : Ecriture_Matricielle()
+        * Auteur : Justin Ferdinand 21/12/2021
+        * Valeur ajoutée : 
+        *      Ce service permet d'écrire les caractères de la matrice en fonction de leurs état.
+        *      Il renvoie X si la cellule est vivante (naissance ou survie), O si mort.
+        * INPUT : booléen avenir
+        * OUTPUT : X ou O
+        */
+        public static char Ecriture_Matricielle(bool avenir)
+        {
+            char newCase;
+            if (avenir == true)
+            {
+                newCase = 'X';
+            }
+            else
+            {
+                newCase = 'O';
+            }
+            return newCase;
+        }
+
+        /*FS2.4 : Affichage_Jeu()
+         * Auteur : Justin Ferdinand 21/12/2021
+         * Valeur ajoutée : 
+         *      Ce service permet d'afficher les cases de la matrice.
+         *      Il peut mettre en pause pendant un instant le programme par l'appuie de la touche espace.
+         * INPUT : Matrice2D de caractères, matriceActuelle de caractères.
+         * OUTPUT : -----
+         */
+        public static void Affichage_Jeu(char[,] matriceActuelle)
+        {
+            int nbLigne = matriceActuelle.GetLength(0);
+            int nbColon = matriceActuelle.GetLength(1);
+
+            Console.Clear();
+
+            for (int indiceLigne = 0; indiceLigne < nbLigne; indiceLigne++)
+            {
+                for (int indiceColon = 0; indiceColon < nbColon; indiceColon++)
+                {
+                    if (matriceActuelle[indiceLigne, indiceColon] == 'O')
+                    {
+                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.BackgroundColor = ConsoleColor.White;
+                        Console.Write($"{matriceActuelle[indiceLigne, indiceColon]} ");
+                        Console.BackgroundColor = ConsoleColor.Black;
+                    } else
+                    {
+                        Console.ForegroundColor = ConsoleColor.Black;
+                        Console.BackgroundColor = ConsoleColor.Black;
+                        Console.Write($"{matriceActuelle[indiceLigne, indiceColon]} ");
+                        Console.ForegroundColor = ConsoleColor.White;
+                    }
+                }
+                Console.WriteLine();
+            }
+        }
+
+        /*FP3 : Bool_continue()
             * Auteur : Justin Ferdinand 21/12/2021
             * Valeur ajoutée : 
             *      Ce service décide s'il faut continuer ou non en déterminant si l'état actuelle de la grille est stable ou non.
@@ -304,11 +404,25 @@ namespace Automate_Cellulaire
             }
         }
 
-        
-
         static void Main(string[] args)
         {
+            Interface_de_Depart();
 
+            char[,] matrice = Lecture_Matricielle();
+            char[,] nouvelleMatrice;
+
+            bool boucle = false;
+
+            do
+            {
+                nouvelleMatrice = Traitement_Matricielle(matrice);
+
+                boucle = Bool_continue(matrice, nouvelleMatrice);
+
+                matrice = nouvelleMatrice;
+
+                Thread.Sleep(25);
+            } while (boucle == false);
         }   
     }
 }

@@ -45,9 +45,9 @@ namespace Automate_Cellulaire
 
             char[,] matriceFichier = new char[nbLigne, nbColon];
 
-            for (int indiceLigne = 0; indiceLigne < Taille[0]; indiceLigne++)
+            for (int indiceLigne = 0; indiceLigne < nbLigne; indiceLigne++)
             {
-                for (int indiceColon = 0; indiceColon < Taille[1]; indiceColon++)
+                for (int indiceColon = 0; indiceColon < nbColon; indiceColon++)
                 {
                     matriceFichier[indiceLigne, indiceColon] = Convert.ToChar(Lignes[indiceLigne].Split('|')[indiceColon]);
                 }
@@ -80,10 +80,15 @@ namespace Automate_Cellulaire
                     Console.WriteLine($"Saisissez le nouveau nbLigne > {nbLigne} : ");
                     saisieL = Convert.ToInt32(Console.ReadLine());
 
+                } while (saisieL <= nbLigne);
+
+                do
+                {
                     Console.WriteLine($"Saisissez le nouveau nbColonne > {nbColon} : ");
                     saisieC = Convert.ToInt32(Console.ReadLine());
 
-                } while (saisieL <= nbLigne && saisieC <= nbColon);
+                } while (saisieC <= nbColon);
+
                 nbLigne = saisieL; nbColon = saisieC;
             }
             return choix;
@@ -161,11 +166,11 @@ namespace Automate_Cellulaire
             {
                 if (Ligne != "")
                 {
-                    compteLigne++;
+                    compteLigne +=1;
 
                     string[] colonnes = Ligne.Split('|');
 
-                    foreach (string colonne in colonnes) if (colonne != null) compteColonne++;
+                    foreach (string colonne in colonnes) if (colonne != "") compteColonne++;
                 }
             }
             compteColonne = compteColonne / compteLigne;
@@ -359,12 +364,12 @@ namespace Automate_Cellulaire
             int nbLigne = matriceActuelle.GetLength(0);
             int nbColon = matriceActuelle.GetLength(1);
 
-            Console.Clear();
-
             for (int indiceLigne = 0; indiceLigne < nbLigne; indiceLigne++)
             {
                 for (int indiceColon = 0; indiceColon < nbColon; indiceColon++)
                 {
+                    Console.SetCursorPosition(indiceColon, indiceLigne);
+
                     if (matriceActuelle[indiceLigne, indiceColon] == 'O')
                     {
                         Console.ForegroundColor = ConsoleColor.White;
@@ -408,7 +413,7 @@ namespace Automate_Cellulaire
             {
                 for (int indiceLigne = 0; indiceLigne < nbLigne_de_ancienneMatrice; indiceLigne++)
                 {
-                    for (int indiceColon = 0; indiceColon < nbLigne_de_ancienneMatrice; indiceColon++)
+                    for (int indiceColon = 0; indiceColon < nbColon_de_ancienneMatrice; indiceColon++)
                     {
                         if (ancienneMatrice[indiceLigne, indiceColon] != nouvelleMatrice[indiceLigne, indiceColon]) return false;
                     }
@@ -422,19 +427,20 @@ namespace Automate_Cellulaire
             Interface_de_Depart();
 
             char[,] matrice = Lecture_Matricielle();
-            char[,] nouvelleMatrice;
 
             bool boucle = false;
 
+            Console.Clear();
+
             do
             {
-                nouvelleMatrice = Traitement_Matricielle(matrice);
+                char[,] nouvelleMatrice = Traitement_Matricielle(matrice);
 
                 boucle = Bool_continue(matrice, nouvelleMatrice);
 
                 matrice = nouvelleMatrice;
 
-                Thread.Sleep(25);
+                Thread.Sleep(250);
             } while (boucle == false);
         }
     }

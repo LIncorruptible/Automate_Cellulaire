@@ -41,7 +41,7 @@ namespace Automate_Cellulaire
 
             string[] Lignes = File.ReadAllLines(@"../../../matrices/" + fichier);
 
-            int[] Taille = chercheTailleMatrice(fichier); int nbColon = Taille[0], nbLigne = Taille[1];
+            int[] Taille = chercheTailleMatrice(fichier); int nbLigne = Taille[0], nbColon = Taille[1];
 
             char[,] matriceFichier = new char[nbLigne, nbColon];
 
@@ -55,7 +55,7 @@ namespace Automate_Cellulaire
 
             bool choix = Demande_Taille(ref nbLigne, ref nbColon);
 
-            if (choix == true) return Redimensionne_Matrice(matriceFichier, nbColon, nbLigne);
+            if (choix == true) return Redimensionne_Matrice(matriceFichier, nbLigne, nbColon);
             else return matriceFichier;
         }
         /*FS1.1 : Demande_Taille()
@@ -77,19 +77,19 @@ namespace Automate_Cellulaire
                 int saisieL = 0, saisieC = 0;
                 do
                 {
-                    Console.WriteLine($"Saisissez le nouveau nbLigne > {nbLigne} : ");
+                    Console.WriteLine($"Saisissez le nouveau nbLigne compris entre {nbLigne} et 45");
                     saisieL = Convert.ToInt32(Console.ReadLine());
-
-                } while (saisieL <= nbLigne);
+                } while (saisieL < nbLigne || saisieL > 45);
 
                 do
                 {
-                    Console.WriteLine($"Saisissez le nouveau nbColonne > {nbColon} : ");
+                    Console.WriteLine($"Saisissez le nouveau nbColonne entre {nbColon} et 100");
                     saisieC = Convert.ToInt32(Console.ReadLine());
+                } while (saisieC < nbColon || saisieC > 100);
 
-                } while (saisieC <= nbColon);
-
-                nbLigne = saisieL; nbColon = saisieC;
+                nbLigne = saisieL; nbColon = saisieC; 
+                
+                Console.WriteLine("Appuyer sur une touche pour continuer"); Console.ReadLine();
             }
             return choix;
         }
@@ -104,7 +104,7 @@ namespace Automate_Cellulaire
          *      (entier) nbColon, nbLigne
          * OUTPUT : (Matrice2D de cacractères) matriceFichier
          */
-        public static char[,] Redimensionne_Matrice(char[,] matriceFichier, int nbColon, int nbLigne)
+        public static char[,] Redimensionne_Matrice(char[,] matriceFichier, int nbLigne, int nbColon)
         {
             char[,] nouvelleMatrice = new char[nbLigne, nbColon];
 
@@ -116,13 +116,18 @@ namespace Automate_Cellulaire
             {
                 for (int indiceColonne = 0; indiceColonne < nbColon; indiceColonne++)
                 {
-                    if ((indiceLigne >= coord_Y && indiceLigne <= coord_Y + compteNbLigne - 1) && (indiceColonne >= coord_X && indiceColonne <= coord_X + compteNbLigne - 1))
+                    if ( (indiceLigne >= coord_Y) && (indiceLigne <= coord_Y + compteNbLigne - 1) )
                     {
-                        nouvelleMatrice[indiceLigne, indiceColonne] = matriceFichier[indLigneMF, indColonMF]; indColonMF++;
+                        if ( (indiceColonne >= coord_X) && (indiceColonne <= coord_X + compteNbColon - 1) )
+                        {
+                            nouvelleMatrice[indiceLigne, indiceColonne] = matriceFichier[indLigneMF, indColonMF]; 
+                            indColonMF++;
+                        }
+                        else nouvelleMatrice[indiceLigne, indiceColonne] = 'O';
                     }
                     else nouvelleMatrice[indiceLigne, indiceColonne] = 'O';
                 }
-                if (indiceLigne >= coord_Y && indiceLigne <= coord_Y + compteNbLigne - 1) indLigneMF++;
+                if ((indiceLigne >= coord_Y) && (indiceLigne <= coord_Y + compteNbLigne - 1)) indLigneMF++;
                 indColonMF = 0;
             }
             return nouvelleMatrice;
@@ -372,21 +377,19 @@ namespace Automate_Cellulaire
 
                     if (matriceActuelle[indiceLigne, indiceColon] == 'O')
                     {
-                        Console.ForegroundColor = ConsoleColor.White;
                         Console.BackgroundColor = ConsoleColor.White;
-                        Console.Write($"{matriceActuelle[indiceLigne, indiceColon]} ");
+                        Console.Write($"  ");
                         Console.BackgroundColor = ConsoleColor.Black;
                     }
                     else
                     {
-                        Console.ForegroundColor = ConsoleColor.Black;
                         Console.BackgroundColor = ConsoleColor.Black;
-                        Console.Write($"{matriceActuelle[indiceLigne, indiceColon]} ");
-                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.Write($" ");
                     }
                 }
                 Console.WriteLine();
             }
+            Thread.Sleep(20);
         }
 
         /*FP3 : Bool_continue()
@@ -439,8 +442,6 @@ namespace Automate_Cellulaire
                 boucle = Bool_continue(matrice, nouvelleMatrice);
 
                 matrice = nouvelleMatrice;
-
-                Thread.Sleep(250);
             } while (boucle == false);
         }
     }

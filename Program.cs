@@ -389,7 +389,7 @@ namespace Automate_Cellulaire
                 }
                 Console.WriteLine();
             }
-            Thread.Sleep(20);
+            Thread.Sleep(250);
         }
 
         /*FP3 : Bool_continue()

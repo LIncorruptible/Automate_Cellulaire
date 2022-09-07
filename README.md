@@ -21,7 +21,7 @@ Ici canonPlaneur.txt a été choisit.
 
 ![](image/README/1640257330246.png)
 
-On demande ensuite si l'utilisateur veut redimensionner la grille de jeu (la ragrandir) **O**pour Oui et **N** pour Non.
+On demande ensuite si l'utilisateur veut redimensionner la grille de jeu (la ragrandir) **O** pour Oui et **N** pour Non.
 
 ![](image/README/1640257437507.png)
 
